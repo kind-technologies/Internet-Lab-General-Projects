@@ -1,3 +1,6 @@
+# Import Application Configuration
+from config.ilconfig import *
+
 import cgi
 
 from google.appengine.api import users
@@ -28,6 +31,8 @@ class MainPage(webapp.RequestHandler):
 application = webapp.WSGIApplication(
 									[ #List
 										('/', MainPage), # Tuple
+										('/blog', BlogController), # Tuple
+										('/contact', ContactController), # Tuple
 									],
 									debug=True
 									)
