@@ -1,0 +1,95 @@
+{% include "../elements/header.html" %}
+<div id="slideshow">
+	<!-- start -->
+	<div id="foobar">
+		<div id="col1"><a href="#" class="previous">&nbsp;</a></div>
+		<div id="col2">
+			<div class="viewer">
+				<div class="reel">
+					<div class="slide"><img src="/static/img/img04.jpg" width="726" height="335" alt="" /> <span>Lorem Ipsum Dolor Sit Amet.</span> </div>
+					<div class="slide"><img src="/static/img/img07.jpg" width="726" height="335" alt="" /> <span>Mauris vitae nisl nec metus placerat consectetuer.</span> </div>
+					<div class="slide"><img src="/static/img/img08.jpg" width="726" height="335" alt="" /> <span>Nam bibendum dadn nulla tortor elementum ipsum</span> </div>
+				</div>
+			</div>
+		</div>
+		<div id="col3"><a href="#" class="next">&nbsp;</a></div>
+	</div>
+	<script type="text/javascript">
+
+						$('#foobar').slidertron({
+							viewerSelector:			'.viewer',
+							reelSelector:			'.viewer .reel',
+							slidesSelector:			'.viewer .reel .slide',
+							navPreviousSelector:	'.previous',
+							navNextSelector:		'.next',
+							navFirstSelector:		'.first',
+							navLastSelector:		'.last'
+						});
+						
+					</script>
+	<!-- end -->
+</div>
+<div id="page">
+	<div id="page-bgtop">
+		<div id="content">
+			<div class="post">
+				<p class="meta"><span class="date">Sunday, April 26, 2009</span> 7:27 AM Posted by <a href="#">Someone</a></p>
+				<h2 class="title"><a href="#">Welcome to Throughout </a></h2>
+				<div class="entry">
+					<p>This is <strong>Throughout </strong>, a free, fully standards-compliant CSS template designed by <a href="http://www.freecsstemplates.org/">Free CSS Templates</a>.  The slideshow uses photos from <a href="http://www.pdphoto.org">PDPhoto.org</a> and is powered by Slidertron (a jQuery plugin by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>). This free template is released under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attributions</a> license, so you’re pretty much free to do whatever you want with it  (even use it commercially) provided you keep the links in the footer  intact. Aside from that, have fun with it :)				</p>
+				</div>
+				<div><a href="#" class="links">View Full Story</a></div>
+			</div>
+			<div class="post">
+				<p class="meta"><span class="date">Sunday, April 26, 2009</span> 7:27 AM Posted by <a href="#">Someone</a></p>
+				<h2 class="title"><a href="#">Lorem ipsum sed aliquam</a></h2>
+				<div class="entry">
+					<p><img src="/static/img/img11.jpg" width="560" height="270" alt="" />Donec ipsum. Proin imperdiet est. Phasellus <a href="#">dapibus semper urna</a>. Pellentesque ornare, orci in consectetuer hendrerit, urna elit eleifend nunc, ut consectetuer nisl felis ac diam. Etiam non felis.</p>
+				</div>
+				<div><a href="#" class="links">View Full Story</a></div>
+			</div>
+		</div>
+		<!-- end #content -->
+		<div id="sidebar">
+			<ul>
+				<li>
+					<h2>Aliquam tempus</h2>
+					<p>Mauris vitae nisl nec metus placerat perdiet est. Phasellus dapibus semper urna. Pellentesque ornare, orci in consectetuer hendrerit, volutpat.</p>
+				</li>
+				<li>
+					<h2>Pellenteque ornare </h2>
+					<ul>
+						<li><a href="#">Nec metus sed donec</a></li>
+						<li><a href="#">Magna lacus bibendum mauris</a></li>
+						<li><a href="#">Velit semper nisi molestie</a></li>
+						<li><a href="#">Eget tempor eget nonummy</a></li>
+						<li><a href="#">Nec metus sed donec</a></li>
+						<li><a href="#">Velit semper nisi molestie</a></li>
+						<li><a href="#">Eget tempor eget nonummy</a></li>
+						<li><a href="#">Nec metus sed donec</a></li>
+					</ul>
+				</li>
+				<li>
+					<h2>Turpis nulla</h2>
+					<ul>
+						<li><a href="#">Nec metus sed donec</a></li>
+						<li><a href="#">Magna lacus bibendum mauris</a></li>
+						<li><a href="#">Velit semper nisi molestie</a></li>
+						<li><a href="#">Eget tempor eget nonummy</a></li>
+						<li><a href="#">Nec metus sed donec</a></li>
+						<li><a href="#">Nec metus sed donec</a></li>
+						<li><a href="#">Magna lacus bibendum mauris</a></li>
+						<li><a href="#">Velit semper nisi molestie</a></li>
+						<li><a href="#">Eget tempor eget nonummy</a></li>
+						<li><a href="#">Nec metus sed donec</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+		<!-- end #sidebar -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<!-- end #page -->
+</div>
+{% include "../elements/footer.html" %}
+
