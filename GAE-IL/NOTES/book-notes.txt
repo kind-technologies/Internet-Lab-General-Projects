@@ -1,0 +1,25 @@
+webapp framework components
+===========================
+
+1. Request
+2. Response
+3. RequestHandlers
+4. WSGIApplication
+
+google.appengine.webapp.util
+
+	-> run_wsgi_app (anApplication)
+	
+	-> @login_required
+	
+
+Datastore, Object-Oriented, and Relational Database Terms
+=========================================================
+
+OOP				RDBMS			Bigtable
+
+Class			Table			Kind
+Obejct			Record			Entity
+Attribute		Column			Property
+
+
