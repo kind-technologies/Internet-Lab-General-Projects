@@ -1,4 +1,6 @@
 from google.appengine.ext import db
 
 class PostModel(db.Model):
-	pass
+	
+	def test(self):
+		return "Hello World"

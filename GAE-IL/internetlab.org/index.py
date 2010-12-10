@@ -10,6 +10,8 @@ application = webapp.WSGIApplication(
 		('/', IndexController), # Tuple
 		('/blog', BlogController), # Tuple
 		('/contact', ContactController), # Tuple
+		('/ilhq', AdminController),
+		('/ilhq/', AdminController),
 	],
 	debug=True
 )
