@@ -1,0 +1,45 @@
+{% include "../elements/admin_header.html" %}
+<div id="slideshow">
+	<div style="float:left">
+		<h3>{{ page_title }}</h3>
+	</div>
+{% comment %}
+	<div style="float:right;margin-right:10px">
+		<a href="/ilhq/blog/add">Add Post</a>
+	</div>
+{% endcomment %}
+</div>
+<div id="page">
+	<form action="/ilhq/blog/">
+		<table>
+			<tr>
+				<td>Title :</td>
+				<td><input type="text" size="80" name="ptitle" id="ptitle" /></td>
+			</tr>
+			<tr>
+				<td valign="top">Post :</td>
+				<td><textarea name="pbody" cols="80" rows="30" id="pbody"></textarea></td>
+			</tr>
+			<tr>
+				<td>Keywords :</td>
+				<td><input type="text" size="60" name="pkeywords" id="pkeywords" /></td>
+			</tr>
+			<tr>
+				<td>Post URL :</td>
+				<td><input type="text" size="60" name="purl" id="purl" /></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<input type="checkbox" name="pprimary" id="pprimary" /> Set Primary
+					<input type="checkbox" name="penabled" id="penabled" checked /> Enabled
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><input type="submit" text="Add" name="purl" id="purl" /></td>
+			</tr>
+		</table>
+	</form>
+</div>
+{% include "../elements/admin_footer.html" %}

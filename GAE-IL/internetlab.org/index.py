@@ -9,9 +9,9 @@ application = webapp.WSGIApplication(
 	[ #List
 		('/', IndexController), # Tuple
 		('/blog', BlogController), # Tuple
-		('/contact', ContactController), # Tuple
-		('/ilhq', AdminController),
+		('/contact', ContactController), # Tuplei
 		('/ilhq/', AdminController),
+		(r'/ilhq/(.*)/(.*)/(.*)', AdminController),
 	],
 	debug=True
 )

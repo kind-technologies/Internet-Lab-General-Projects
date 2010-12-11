@@ -1,7 +1,12 @@
 {% include "../elements/admin_header.html" %}
 <div id="slideshow">
 <div>
-<h3>{{ page_title }}</h3>
+	<div style="float:left">
+		<h3>{{ page_title }}</h3>
+	</div>
+	<div style="float:right;margin-right:10px">
+		<a href="/ilhq/blog/add/">Add Post</a>
+	</div>
 </div>
 {% for greeting in greetings %}
 	{% if greeting.author%}

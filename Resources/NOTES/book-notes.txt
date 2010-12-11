@@ -22,4 +22,7 @@ Class			Table			Kind
 Obejct			Record			Entity
 Attribute		Column			Property
 
+Local Setup
+===========
+http://localhost:8080/_ah/admin/datastore
 

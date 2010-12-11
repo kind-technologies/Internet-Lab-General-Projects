@@ -16,8 +16,17 @@ class BlogHandler:
 		self.response.out.write(template.render(path, params))
 
 	def add_post(self):
-		pass
+		p = PostModel()
+		view_params = {
+			'page_title': "Blog :: Post list",
+			'url': "",
+			'url_linktext': "",
+			'result': p.test()
+		}
 
+		view = "blog_add_post"
+		self.render(view, view_params)
+	
 	def edit_post(self):
 		pass
 	
@@ -31,7 +40,6 @@ class BlogHandler:
 		pass
 
 	def list_posts(self):
-
 		p = PostModel()
 		view_params = {
 			'page_title': "Blog :: Post list",
@@ -53,7 +61,17 @@ class AdminController(webapp.RequestHandler):
 		self.manager = BlogHandler(self.response)
 
 	@login_required	
-	def get(self):
-		self.manager.list_posts()
+	def get(self, entity='', action='', param=''):
+#		print entity
+#		print action
+#		print param
+#		print (entity == 'blog')
+
+		if (entity == '' or 'blog') and (action == ''):
+			self.manager.list_posts()
+		elif (entity == 'blog') and (action == 'add'):
+			self.manager.add_post()
 
 	
+
+
