@@ -10,7 +10,7 @@
 {% endcomment %}
 </div>
 <div id="page">
-	<form action="/ilhq/blog/">
+	<form method="post" action="/ilhq/blog/add/">
 		<table>
 			<tr>
 				<td>Title :</td>
@@ -36,8 +36,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td></td>
-				<td><input type="submit" text="Add" name="purl" id="purl" /></td>
+				<td>
+					<input type="hidden" size="60" name="pid" id="pid" value="{{ pid }}" />
+					<input type="hidden" size="60" name="paction" id="paction" value="{{ paction }}" />
+				</td>
+				<td><input type="submit" value="Add Post" name="purl" id="purl" /></td>
 			</tr>
 		</table>
 	</form>

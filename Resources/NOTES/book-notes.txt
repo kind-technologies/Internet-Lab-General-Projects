@@ -26,3 +26,9 @@ Local Setup
 ===========
 http://localhost:8080/_ah/admin/datastore
 
+Dev Server Start Up Command
+===========================
+./dev_appserver.py --datastore_path=/home/keerthi/WEB-ROOT/Internet-Lab-General-Projects/GAE-IL/internetlab.org/datastore/dev_appserver.datastore  internetlab.org/
+
+
+

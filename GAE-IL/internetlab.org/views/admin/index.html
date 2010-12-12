@@ -8,13 +8,13 @@
 		<a href="/ilhq/blog/add/">Add Post</a>
 	</div>
 </div>
-{% for greeting in greetings %}
-	{% if greeting.author%}
-		<b>{{ greeting.author.nickname }}</b> wrote:
+{% for post in posts %}
+	{% if post.author%}
+		<b>{{ post.author.nickname }}</b> wrote:
 	{% else %}
 		An anonymous person wrote:
 	{% endif %}
-	<blockquote>{{ greeting.content|escape }}</blockquote>
+	<blockquote>{{ post.title|escape }}</blockquote>
 {% endfor%}
 </div>
 <div id="page">

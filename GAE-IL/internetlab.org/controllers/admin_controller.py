@@ -7,8 +7,9 @@ from models.post_model import *
 
 class BlogHandler:
 
-	def __init__(self, response):
+	def __init__(self, response, request):
 		self.response = response
+		self.request = request
 		self.view_path = os.path.join(os.path.dirname(__file__), '../views/admin/')
 
 	def render(self, view, params):
@@ -16,12 +17,32 @@ class BlogHandler:
 		self.response.out.write(template.render(path, params))
 
 	def add_post(self):
-		p = PostModel()
+
+		title = self.request.get('ptitle')
+		body = self.request.get('pbody')
+		keywords = self.request.get('pkeywords')
+		url = self.request.get('purl')
+
+		is_primary = self.request.get('pprimary')
+		is_primary = True if is_primary == 'on' else False
+		
+		is_enabled = self.request.get('penabled')
+		is_enabled = True if is_enabled == 'on' else False
+		
+		post_id = self.request.get('pid')
+		action = self.request.get('paction')
+
+		if action == 'add':
+			p = PostModel()
+			pid = p.add_new_post(title, body, keywords, url,
+						is_primary, is_enabled)	
+			return pid
+
 		view_params = {
 			'page_title': "Blog :: Post list",
-			'url': "",
-			'url_linktext': "",
-			'result': p.test()
+			'pid': "id",
+			'paction': "add",
+			'result': ""
 		}
 
 		view = "blog_add_post"
@@ -41,11 +62,14 @@ class BlogHandler:
 
 	def list_posts(self):
 		p = PostModel()
+		posts = PostModel.all()	
+		posts.order("-date_added")
+
 		view_params = {
 			'page_title': "Blog :: Post list",
 			'url': "",
 			'url_linktext': "",
-			'result': p.test()
+			'posts': posts
 		}
 
 		view = "index"
@@ -58,20 +82,18 @@ class AdminController(webapp.RequestHandler):
 
 	def initialize(self, request, response):
 		super(AdminController, self).initialize(request, response)
-		self.manager = BlogHandler(self.response)
+		self.manager = BlogHandler(self.response, self.request)
 
 	@login_required	
 	def get(self, entity='', action='', param=''):
-#		print entity
-#		print action
-#		print param
-#		print (entity == 'blog')
-
 		if (entity == '' or 'blog') and (action == ''):
 			self.manager.list_posts()
 		elif (entity == 'blog') and (action == 'add'):
 			self.manager.add_post()
 
-	
-
+	def post(self, entity='', action='', param=''):
+		if (entity == 'blog') and (action == 'add'):
+			pid = self.manager.add_post()
+			if pid:
+				self.redirect('/ilhq/')
 
