@@ -1,6 +1,5 @@
 {% include "../elements/admin_header.html" %}
 <div id="slideshow">
-<div>
 	<div style="float:left">
 		<h3>{{ page_title }}</h3>
 	</div>
@@ -8,17 +7,34 @@
 		<a href="/ilhq/blog/add/">Add Post</a>
 	</div>
 </div>
-{% for post in posts %}
-	{% if post.author%}
-		<b>{{ post.author.nickname }}</b> wrote:
-	{% else %}
-		An anonymous person wrote:
-	{% endif %}
-	<blockquote>{{ post.title|escape }}</blockquote>
-{% endfor%}
-</div>
 <div id="page">
-{{ result }}
+	<table border="0" style="width:100%;border:#FFFFFF">
+		<tr style="background:#DDDDDD;">
+			<th>&nbsp;</th>
+			<th>Title</th>
+			<th>Date Created</th>
+			<th>Date Last Modified</th>
+			<th>Action</th>
+		</tr>
+{% for post in posts %}
+		<tr style="background:#FFFFFF;">
+			<td>&nbsp;</td>
+			<td style="color:#1E1E1E;">{{ post.title|truncatewords:"6" }}</td>
+			<td style="color:#1E1E1E;">{{ post.date_added|date:"Y-m-d H:i:s" }}</td>
+			<td style="color:#1E1E1E;">{{ post.date_last_modified|date:"Y-m-d H:i:s" }}</td>
+			<td style="color:#1E1E1E;">
+				{{ post.is_enabled|escape }} |
+				{{ post.is_primary|escape }} |
+				Edit |
+				Delete
+			</td>
+		</tr>
+		<tr>
+			<td colspan="5" style="height:1px;background-color:#1E1E1E"></td>
+		</tr>
+{% endfor%}
+	</table>
+
 </div>
 {% include "../elements/admin_footer.html" %}
 

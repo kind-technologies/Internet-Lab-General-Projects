@@ -61,7 +61,6 @@ class BlogHandler:
 		pass
 
 	def list_posts(self):
-		p = PostModel()
 		posts = PostModel.all()	
 		posts.order("-date_added")
 

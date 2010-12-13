@@ -32,22 +32,28 @@
 <div id="page">
 	<div id="page-bgtop">
 		<div id="content">
+			<!-- primary post -->
 			<div class="post">
-				<p class="meta"><span class="date">Sunday, April 26, 2009</span> 7:27 AM Posted by <a href="#">Someone</a></p>
-				<h2 class="title"><a href="#">Welcome to Throughout </a></h2>
+				<p class="meta"><span class="date">{{ primary_post.date_last_modified|date:"l, F d, Y" }} </span> {{ primary_post.date_last_modified|date:"g:i A" }} Posted by <a href="#">{{ primary_post.author.nickname|escape }}</a></p>
+				<h2 class="title"><a href="#">{{ primary_post.title }}</a></h2>
 				<div class="entry">
-					<p>This is <strong>Throughout </strong>, a free, fully standards-compliant CSS template designed by <a href="http://www.freecsstemplates.org/">Free CSS Templates</a>.  The slideshow uses photos from <a href="http://www.pdphoto.org">PDPhoto.org</a> and is powered by Slidertron (a jQuery plugin by <a href="http://www.nodethirtythree.com/">NodeThirtyThree</a>). This free template is released under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attributions</a> license, so you’re pretty much free to do whatever you want with it  (even use it commercially) provided you keep the links in the footer  intact. Aside from that, have fun with it :)				</p>
+					{{ primary_post.body|truncatewords:"200" }}
 				</div>
 				<div><a href="#" class="links">View Full Story</a></div>
 			</div>
+			<!-- end #primary post -->
+			<!--new posts-->
+			{% for post in recent_posts %}
 			<div class="post">
-				<p class="meta"><span class="date">Sunday, April 26, 2009</span> 7:27 AM Posted by <a href="#">Someone</a></p>
-				<h2 class="title"><a href="#">Lorem ipsum sed aliquam</a></h2>
+				<p class="meta"><span class="date">{{ post.date_last_modified|date:"l, F d, Y" }} </span> {{ post.date_last_modified|date:"g:i A" }} Posted by <a href="#">{{ post.author.nickname|escape }}</a></p>
+				<h2 class="title"><a href="#">{{ post.title|truncatewords:"8" }}</a></h2>
 				<div class="entry">
-					<p><img src="/static/img/img11.jpg" width="560" height="270" alt="" />Donec ipsum. Proin imperdiet est. Phasellus <a href="#">dapibus semper urna</a>. Pellentesque ornare, orci in consectetuer hendrerit, urna elit eleifend nunc, ut consectetuer nisl felis ac diam. Etiam non felis.</p>
+					{{ post.body|truncatewords:"100" }}
 				</div>
 				<div><a href="#" class="links">View Full Story</a></div>
 			</div>
+			{% endfor%}
+			<!--end #new posts-->
 		</div>
 		<!-- end #content -->
 		<div id="sidebar">
