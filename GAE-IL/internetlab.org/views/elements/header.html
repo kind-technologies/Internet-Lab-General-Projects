@@ -16,9 +16,27 @@ Released   : 20100423
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<script type="text/javascript" src="/static/js/jquery/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="/static/js/jquery.tweet.js"></script>
 	<script type="text/javascript" src="/static/js/jquery/jquery.slidertron-0.1.js"></script>
 	<link href="/static/css/style.css" rel="stylesheet" type="text/css" media="screen" />
 	<link type="text/css" rel="stylesheet" href="/static/css/slidertron.css" />
+	<link type="text/css" rel="stylesheet" href="/static/css/jquery.tweet.css" />
+	<script type='text/javascript'>
+		$(document).ready(function(){
+			$(".tweet").tweet({
+				username: "internetlaborg",
+				join_text: "auto",
+				avatar_size: 32,
+				count: 3,
+				auto_join_text_default: "we said,", 
+				auto_join_text_ed: "we",
+				auto_join_text_ing: "we were",
+				auto_join_text_reply: "we replied to",
+				auto_join_text_url: "we were checking out",
+				loading_text: "loading tweets..."
+			});
+		});
+	</script>
 </head>
 <body>
 <!-- end #header-wrapper -->
