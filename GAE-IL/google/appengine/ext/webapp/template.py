@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+
+
+
 """A simple wrapper for Django templates.
 
 The main purpose of this module is to hide all of the package import pain
@@ -42,30 +45,19 @@ http://www.djangoproject.com/documentation/templates/
 
 
 
-import md5
+
+
+
+
+import logging
 import os
 
-try:
-  from django import v0_96
-except ImportError:
-  pass
-import django
+from google.appengine.ext import webapp
+webapp._config_handle.django_setup()
 
-import django.conf
-try:
-  django.conf.settings.configure(
-    DEBUG=False,
-    TEMPLATE_DEBUG=False,
-    TEMPLATE_LOADERS=(
-      'django.template.loaders.filesystem.load_template_source',
-    ),
-  )
-except (EnvironmentError, RuntimeError):
-  pass
 import django.template
 import django.template.loader
 
-from google.appengine.ext import webapp
 
 def render(template_path, template_dict, debug=False):
   """Renders the template at the given path with the given dict of values.
@@ -113,6 +105,8 @@ def load(path, debug=False):
       template_cache[abspath] = template
 
     def wrap_render(context, orig_render=template.render):
+
+
       URLNode = django.template.defaulttags.URLNode
       save_urlnode_render = URLNode.render
       old_settings = _swap_settings(new_settings)
@@ -190,8 +184,21 @@ def register_template_library(package_name):
   """Registers a template extension module to make it usable in templates.
 
   See the documentation for create_template_register for more information."""
+
+
+
+
+
+
+
+
+
+
+
+
   if not django.template.libraries.get(package_name, None):
     django.template.add_to_builtins(package_name)
+
 
 
 Template = django.template.Template

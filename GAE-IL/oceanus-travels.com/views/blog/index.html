@@ -1,0 +1,34 @@
+{% include "../elements/header.html" %}
+<div id="page">
+	<div id="page-bgtop">
+		<div id="blog_content">
+			<!-- primary post -->
+			<div class="post">
+				<p class="meta"><span class="date">{{ primary_post.date_last_modified|date:"l, F d, Y" }} </span> {{ primary_post.date_last_modified|date:"g:i A" }} Posted by <a href="#">{{ primary_post.author.nickname|escape }}</a></p>
+				<h2 class="title"><a href="#">{{ primary_post.title }}</a></h2>
+				<div class="entry">
+					{{ primary_post.body|truncatewords:"200" }}
+				</div>
+				<div><a href="/blog/view/{{ primary_post.url }}/" class="links">View Full Post</a></div>
+			</div>
+			<!-- end #primary post -->
+			<!--new posts-->
+			{% for post in recent_posts %}
+			<div class="post">
+				<p class="meta"><span class="date">{{ post.date_last_modified|date:"l, F d, Y" }} </span> {{ post.date_last_modified|date:"g:i A" }} Posted by <a href="#">{{ post.author.nickname|escape }}</a></p>
+				<h2 class="title"><a href="#">{{ post.title|truncatewords:"8" }}</a></h2>
+				<div class="entry">
+					{{ post.body|truncatewords:"100" }}
+				</div>
+				<div><a href="/blog/view/{{ post.url }}/" class="links">View Full Post</a></div>
+			</div>
+			{% endfor%}
+			<!--end #new posts-->
+		</div>
+		<!-- end #content -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<!-- end #page -->
+</div>
+{% include "../elements/footer.html" %}
+

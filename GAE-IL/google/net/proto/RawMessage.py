@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+
 """
 This is the Python counterpart to the RawMessage class defined in rawmessage.h.
 
@@ -59,6 +60,9 @@ class RawMessage(ProtocolBuffer.ProtocolMessage):
   def OutputUnchecked(self, e):
     e.putRawString(self.__contents)
 
+  def OutputPartial(self, e):
+    return self.OutputUnchecked(e)
+
   def TryMerge(self, d):
     self.__contents = d.getRawString()
 
@@ -81,3 +85,5 @@ class RawMessage(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     return len(self.__contents)
 
+  def ByteSizePartial(self):
+    return self.ByteSize()

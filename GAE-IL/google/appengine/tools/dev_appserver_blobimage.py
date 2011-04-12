@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+
+
+
 """Dispatcher for dynamic image serving requests.
 
 Classes:
@@ -47,15 +50,14 @@ def CreateBlobImageDispatcher(images_stub):
     New dispatcher capable of dynamic image serving requests.
   """
 
+
+
   from google.appengine.tools import dev_appserver
 
   class BlobImageDispatcher(dev_appserver.URLDispatcher):
     """Dispatcher that handles image serving requests."""
 
-    _cropped_sizes = [32, 48, 64, 72, 80, 104, 136, 144, 150, 160]
-    _uncropped_sizes = [0, 32, 48, 64, 72, 80, 90, 94, 104, 110, 120, 128, 144,
-                        150, 160, 200, 220, 288, 320, 400, 512, 576, 640, 720,
-                        800, 912, 1024, 1152, 1280, 1440, 1600]
+    _size_limit = 1600
     _mime_type_map = {images_service_pb.OutputSettings.JPEG: 'image/jpeg',
                       images_service_pb.OutputSettings.PNG: 'image/png'}
 
@@ -78,28 +80,33 @@ def CreateBlobImageDispatcher(images_stub):
         The tranformed (if necessary) image bytes.
       """
       resize, crop = self._ParseOptions(options)
+
       image_data = images_service_pb.ImageData()
       image_data.set_blob_key(blob_key)
       image = self._images_stub._OpenImageData(image_data)
       original_mime_type = image.format
 
+
       if crop:
         width, height = image.size
         crop_xform = None
         if width > height:
+
           crop_xform = images_service_pb.Transform()
           delta = (width - height) / (width * 2.0)
           crop_xform.set_crop_left_x(delta)
           crop_xform.set_crop_right_x(1.0 - delta)
         elif width < height:
+
           crop_xform = images_service_pb.Transform()
           delta = (height - width) / (height * 2.0)
-          top_delta = max(0, delta - 0.25)
+          top_delta = max(0.0, delta - 0.25)
           bottom_delta = 1.0 - (2.0 * delta) + top_delta
           crop_xform.set_crop_top_y(top_delta)
           crop_xform.set_crop_bottom_y(bottom_delta)
         if crop_xform:
           image = self._images_stub._Crop(image, crop_xform)
+
 
       if resize:
         resize_xform = images_service_pb.Transform()
@@ -108,6 +115,8 @@ def CreateBlobImageDispatcher(images_stub):
         image = self._images_stub._Resize(image, resize_xform)
 
       output_settings = images_service_pb.OutputSettings()
+
+
       output_mime_type = images_service_pb.OutputSettings.JPEG
       if original_mime_type in ['PNG', 'GIF']:
         output_mime_type = images_service_pb.OutputSettings.PNG
@@ -133,11 +142,10 @@ def CreateBlobImageDispatcher(images_stub):
         if match.group(2):
           crop = True
 
-      if resize:
-        if crop and resize not in BlobImageDispatcher._cropped_sizes:
-          raise ValueError, 'Invalid crop size'
-        elif resize not in BlobImageDispatcher._uncropped_sizes:
-          raise ValueError, 'Invalid resize'
+
+      if resize and (resize > BlobImageDispatcher._size_limit or
+                     resize < 0):
+        raise ValueError, 'Invalid resize'
       return (resize, crop)
 
     def _ParseUrl(self, url):
@@ -162,6 +170,7 @@ def CreateBlobImageDispatcher(images_stub):
       elif match.group(2):
         blobkey = ''.join([blobkey, match.group(2)])
       return (blobkey, options)
+
 
     def Dispatch(self,
                  request,
@@ -193,6 +202,8 @@ def CreateBlobImageDispatcher(images_stub):
       except RuntimeError:
         outfile.write('Status: 400\r\n')
       except:
+
+
         outfile.write('Status: 500\r\n')
 
   return BlobImageDispatcher(images_stub)

@@ -467,3 +467,10 @@ hr { display: none; }
 
 #footer a {
 }
+
+/* Blog Content */
+
+#blog_content {
+	float: left;
+	width: 880px;
+}

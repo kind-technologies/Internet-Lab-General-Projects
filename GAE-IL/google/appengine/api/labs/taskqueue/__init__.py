@@ -15,6 +15,42 @@
 # limitations under the License.
 #
 
-"""Task Queue API module."""
+
+
+
+"""Task Queue API module (labs compatibility)."""
+
+
+
+
+
+
+
+import os
+import warnings
 
 from taskqueue import *
+
+
+
+
+__all__ = [
+
+    'BadTaskStateError', 'BadTransactionState', 'BadTransactionStateError',
+    'DatastoreError', 'DuplicateTaskNameError', 'Error', 'InternalError',
+    'InvalidQueueError', 'InvalidQueueNameError', 'InvalidTaskError',
+    'InvalidTaskNameError', 'InvalidUrlError', 'PermissionDeniedError',
+    'TaskAlreadyExistsError', 'TaskTooLargeError', 'TombstonedTaskError',
+    'TooManyTasksError', 'TransientError', 'UnknownQueueError',
+
+    'MAX_QUEUE_NAME_LENGTH', 'MAX_TASK_NAME_LENGTH', 'MAX_TASK_SIZE_BYTES',
+    'MAX_URL_LENGTH',
+
+    'Queue', 'Task', 'add']
+
+
+
+if os.environ.get('DATACENTER', None) is None:
+  warnings.warn('google.appengine.api.labs.taskqueue is deprecated, please use '
+                'google.appengine.api.taskqueue', DeprecationWarning,
+                stacklevel=2)

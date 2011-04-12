@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+
+
+
+
 """Full text indexing and search, implemented in pure python.
 
 Defines a SearchableModel subclass of db.Model that supports full text
@@ -106,6 +110,22 @@ properties in a given entity. Caveat hacker!
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import re
 import string
 import sys
@@ -114,7 +134,9 @@ from google.appengine.api import datastore
 from google.appengine.api import datastore_errors
 from google.appengine.api import datastore_types
 from google.appengine.ext import db
-from google.appengine.datastore import datastore_pb
+from google.appengine.datastore import datastore_query
+
+
 
 ALL_PROPERTIES = []
 
@@ -125,9 +147,20 @@ class SearchableEntity(datastore.Entity):
   built-in per-property indices. To search, use the SearchableQuery class and
   its Search() method.
   """
+
+
+
   _FULL_TEXT_INDEX_PROPERTY = '__searchable_text_index'
 
+
+
   _FULL_TEXT_MIN_LENGTH = 3
+
+
+
+
+
+
 
   _FULL_TEXT_STOP_WORDS = frozenset([
    'a', 'about', 'according', 'accordingly', 'affected', 'affecting', 'after',
@@ -161,7 +194,9 @@ class SearchableEntity(datastore.Entity):
    'where', 'whether', 'which', 'while', 'who', 'whose', 'why', 'widely',
    'will', 'with', 'within', 'without', 'would', 'yet', 'you'])
 
+
   _word_delimiter_regex = re.compile('[' + re.escape(string.punctuation) + ']')
+
 
   _searchable_properties = [ALL_PROPERTIES]
 
@@ -186,6 +221,7 @@ class SearchableEntity(datastore.Entity):
       self._Entity__key = kind_or_entity._Entity__key
       self._Entity__unindexed_properties = frozenset(kind_or_entity.unindexed_properties())
       if isinstance(kind_or_entity, SearchableEntity):
+
         if getattr(kind_or_entity, '_searchable_properties', None) is not None:
           self._searchable_properties = kind_or_entity._searchable_properties
       self.update(kind_or_entity)
@@ -199,9 +235,14 @@ class SearchableEntity(datastore.Entity):
       entity_pb.Entity
     """
     for properties_to_index in self._searchable_properties:
+
+
+
+
       index_property_name = SearchableEntity.IndexPropertyName(properties_to_index)
       if index_property_name in self:
         del self[index_property_name]
+
 
 
       if not properties_to_index:
@@ -246,10 +287,14 @@ class SearchableEntity(datastore.Entity):
 
     if text:
       datastore_types.ValidateString(text, 'text', max_len=sys.maxint)
+
+
       text = word_delimiter_regex.sub(' ', text)
       words = text.lower().split()
 
+
       words = set(unicode(w) for w in words)
+
 
       words -= cls._FULL_TEXT_STOP_WORDS
       for word in list(words):
@@ -299,15 +344,17 @@ class SearchableQuery(datastore.Query):
     self._properties = properties
     return self
 
-  def _ToPb(self, *args, **kwds):
+  def GetFilterPredicate(self, *args, **kwds):
     """Adds filters for the search query, then delegates to the superclass.
 
-    Mimics Query._ToPb()'s signature. Raises BadFilterError if a filter on the
-    index property already exists.
+    Mimics Query.GetFilterPredicate()'s signature. Raises BadFilterError if a
+    filter on the index property already exists.
 
     Returns:
-      datastore_pb.Query
+      datastore_query.FilterPredicate
     """
+
+
 
     properties = getattr(self, "_properties", ALL_PROPERTIES)
 
@@ -316,20 +363,21 @@ class SearchableQuery(datastore.Query):
       raise datastore_errors.BadFilterError(
         '%s is a reserved name.' % index_property_name)
 
-    pb = super(SearchableQuery, self)._ToPb(*args, **kwds)
+    filter = super(SearchableQuery, self).GetFilterPredicate(*args, **kwds)
 
     if hasattr(self, '_search_query'):
       keywords = SearchableEntity._FullTextIndex(
           self._search_query, self._word_delimiter_regex)
-      for keyword in keywords:
-        filter = pb.add_filter()
-        filter.set_op(datastore_pb.Query_Filter.EQUAL)
-        prop = filter.add_property()
-        prop.set_name(index_property_name)
-        prop.set_multiple(len(keywords) > 1)
-        prop.mutable_value().set_stringvalue(unicode(keyword).encode('utf-8'))
-
-    return pb
+      if keywords:
+        search_filter = datastore_query.make_filter(
+            index_property_name, '=', list(keywords))
+        if filter:
+          filter = datastore_query.CompositeFilter(
+              datastore_query.CompositeFilter.AND,
+              [filter, search_filter])
+        else:
+          filter = search_filter
+    return filter
 
 
 class SearchableMultiQuery(datastore.MultiQuery):
@@ -362,6 +410,7 @@ class SearchableModel(db.Model):
 
   @classmethod
   def SearchableProperties(cls):
+
     return [ALL_PROPERTIES]
 
   class Query(db.Query):
@@ -380,6 +429,7 @@ class SearchableModel(db.Model):
       """
       self._search_query = search_query
       self._properties = properties
+
 
       if self._properties not in getattr(self, '_searchable_properties', [ALL_PROPERTIES]):
         raise datastore_errors.BadFilterError(

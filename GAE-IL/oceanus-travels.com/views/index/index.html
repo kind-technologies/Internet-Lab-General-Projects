@@ -1,0 +1,115 @@
+{% include "../elements/header.html" %}
+	<div id="page">
+		<div id="page-bgtop">
+			<div id="page-bgbtm">
+				<div id="content">
+					<div>
+						<div id="gallery">
+							<div id="gallery-background"><img src="/static/img/img06.png" alt="" width="600" height="340" class="output" /></div>
+							<div id="gallery-bgthumb">
+								<ul class="thumbnails">
+									<li><img src="/static/img/img06.png" title="LA Skyline ; Upwards shot of a small portion of Los Angeles' skyline." alt="" width="128" height="88" /></li>
+									<li><img src="/static/img/6.jpg" title="Leaf ; A close up shot of a green leaf." alt="" width="100" height="75" /></li>
+									<li><img src="/static/img/7.jpg" title="Chinese Bell ; A large bell inscribed with Chinese characters." alt="" width="100" height="75" /></li>
+									<li><img src="/static/img/8.jpg" title="Ladybird ; A close up shot of a ladybird making its way across a leaf." alt="" width="100" height="75" /></li>
+								</ul>
+								<br class="clear" />
+							</div>
+						</div>
+						<script type="text/javascript">
+
+						$('#gallery').gallerax({
+							outputSelector: 		'.output',					// Output selector
+							thumbnailsSelector:		'.thumbnails li img',		// Thumbnails selector
+							fade: 					'fast',						// Transition speed (fast)
+							navNextSelector:		'.nav li a.navNext',		// 'Next' selector
+							navPreviousSelector:	'.nav li a.navPrevious'		// 'Previous' selector
+						});
+
+					</script>
+						<!-- end -->
+					</div>
+					<!-- primary post -->
+					<div class="post">
+						<h2 class="title"><a href="#">{{ primary_post.title }} </a></h2>
+						<p class="meta"><span class="date">{{ primary_post.date_last_modified|date:"g:i A" }}</span></p>
+						<div style="clear: both;">&nbsp;</div>
+						<div class="entry">
+							{{ primary_post.body|truncatewords:"200" }}
+							<p class="links"><a href="/blog/view/{{ primary_post.url }}/">Read More &nbsp;&gt;&gt;</a></p>
+						</div>
+					</div>
+					<!-- end #primary post -->
+					<!--new posts-->
+					{% for post in recent_posts %}					
+					<div class="post">
+						<h2 class="title"><a href="#">{{ post.title|truncatewords:"8" }}</a></h2>
+						<p class="meta"><span class="date">{{ post.date_last_modified|date:"g:i A" }}</span></p>
+						<div style="clear: both;">&nbsp;</div>
+						<div class="entry">
+							{{ post.body|truncatewords:"100" }}
+							<p class="links"><a href="/blog/view/{{ post.url }}/">Read More &nbsp;&gt;&gt;</a></p>
+						</div>
+					</div>
+					{% endfor%}
+					<!--end #new posts-->
+					<div style="clear: both;">&nbsp;</div>
+				</div>
+				<!-- end #content -->
+				<div id="sidebar">
+					<ul>
+						<li>
+							<div id="search" >
+								<form method="get" action="#">
+									<div>
+										<input type="text" name="s" id="search-text" value="" />
+										<input type="submit" id="search-submit" value="GO" />
+									</div>
+								</form>
+							</div>
+							<div style="clear: both;">&nbsp;</div>
+						</li>
+						<li>
+							<h2>Categories</h2>
+							<ul>
+								<li><a href="#">Aliquam libero</a></li>
+								<li><a href="#">Consectetuer adipiscing elit</a></li>
+								<li><a href="#">Metus aliquam pellentesque</a></li>
+								<li><a href="#">Suspendisse iaculis mauris</a></li>
+								<li><a href="#">Urnanet non molestie semper</a></li>
+								<li><a href="#">Proin gravida orci porttitor</a></li>
+							</ul>
+						</li>
+						<li>
+							<h2>Blogroll</h2>
+							<ul>
+								<li><a href="#">Aliquam libero</a></li>
+								<li><a href="#">Consectetuer adipiscing elit</a></li>
+								<li><a href="#">Metus aliquam pellentesque</a></li>
+								<li><a href="#">Suspendisse iaculis mauris</a></li>
+								<li><a href="#">Urnanet non molestie semper</a></li>
+								<li><a href="#">Proin gravida orci porttitor</a></li>
+							</ul>
+						</li>
+						<li>
+							<h2>Archives</h2>
+							<ul>
+								<li><a href="#">Aliquam libero</a></li>
+								<li><a href="#">Consectetuer adipiscing elit</a></li>
+								<li><a href="#">Metus aliquam pellentesque</a></li>
+								<li><a href="#">Suspendisse iaculis mauris</a></li>
+								<li><a href="#">Urnanet non molestie semper</a></li>
+								<li><a href="#">Proin gravida orci porttitor</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<!-- end #sidebar -->
+				<div style="clear: both;">&nbsp;</div>
+			</div>
+		</div>
+	</div>
+	<!-- end #page -->
+</div>
+{% include "../elements/footer.html" %}
+

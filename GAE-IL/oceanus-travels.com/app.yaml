@@ -1,0 +1,15 @@
+application: oceanus-travels
+version: 0-3
+runtime: python
+api_version: 1
+
+handlers:
+- url: /static
+  static_dir: static
+
+- url: /.*
+  script: index.py
+
+builtins:
+- datastore_admin: on
+

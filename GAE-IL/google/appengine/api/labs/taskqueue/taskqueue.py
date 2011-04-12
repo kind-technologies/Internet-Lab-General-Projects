@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+
+
+
 """Task Queue API.
 
 Enables an application to queue background work for itself. Work is done through
@@ -29,19 +32,39 @@ base path. A default queue is also provided for simple usage.
 
 
 
+
+
+
+
+
+__all__ = [
+
+    'BadTaskStateError', 'BadTransactionState', 'BadTransactionStateError',
+    'DatastoreError', 'DuplicateTaskNameError', 'Error', 'InternalError',
+    'InvalidQueueError', 'InvalidQueueNameError', 'InvalidTaskError',
+    'InvalidTaskNameError', 'InvalidUrlError', 'PermissionDeniedError',
+    'TaskAlreadyExistsError', 'TaskTooLargeError', 'TombstonedTaskError',
+    'TooManyTasksError', 'TransientError', 'UnknownQueueError',
+
+    'MAX_QUEUE_NAME_LENGTH', 'MAX_TASK_NAME_LENGTH', 'MAX_TASK_SIZE_BYTES',
+    'MAX_URL_LENGTH',
+
+    'Queue', 'Task', 'TaskRetryOptions', 'add']
+
+
 import calendar
 import datetime
+import math
 import os
 import re
 import time
 import urllib
 import urlparse
 
-import taskqueue_service_pb
-
 from google.appengine.api import apiproxy_stub_map
 from google.appengine.api import namespace_manager
 from google.appengine.api import urlfetch
+from google.appengine.api.labs.taskqueue import taskqueue_service_pb
 from google.appengine.runtime import apiproxy_errors
 
 
@@ -127,6 +150,12 @@ class DatastoreError(Error):
 class BadTransactionStateError(Error):
   """The state of the current transaction does not permit this operation."""
 
+
+class InvalidTaskRetryOptionsError(Error):
+  """The task retry configuration is invalid."""
+
+
+
 BadTransactionState = BadTransactionStateError
 
 MAX_QUEUE_NAME_LENGTH = 100
@@ -134,6 +163,9 @@ MAX_QUEUE_NAME_LENGTH = 100
 MAX_TASK_NAME_LENGTH = 500
 
 MAX_TASK_SIZE_BYTES = 10 * (2 ** 10)
+
+MAX_TASKS_PER_ADD = 100
+
 
 MAX_URL_LENGTH = 2083
 
@@ -193,8 +225,15 @@ _ERROR_MAPPING = {
 
 }
 
+
+
+
+
+
+
 _PRESERVE_ENVIRONMENT_HEADERS = (
     ('X-AppEngine-Default-Namespace', 'HTTP_X_APPENGINE_DEFAULT_NAMESPACE'),)
+
 
 
 class _UTCTimeZone(datetime.tzinfo):
@@ -259,6 +298,10 @@ def _flatten_params(params):
     if isinstance(value, unicode):
       return unicode(value).encode('utf-8')
     else:
+
+
+
+
       return str(value)
 
   param_list = []
@@ -277,11 +320,110 @@ def _flatten_params(params):
   return param_list
 
 
+class TaskRetryOptions(object):
+  """The options used to decide when a failed Task will be retried."""
+
+  __CONSTRUCTOR_KWARGS = frozenset(
+      ['min_backoff_seconds', 'max_backoff_seconds',
+       'task_age_limit', 'max_doublings', 'task_retry_limit'])
+
+  def __init__(self, **kwargs):
+    """Initializer.
+
+    Args:
+      min_backoff_seconds: The minimum number of seconds to wait before retrying
+        a task after failure. (optional)
+      max_backoff_seconds: The maximum number of seconds to wait before retrying
+        a task after failure. (optional)
+      task_age_limit: The number of seconds after creation afterwhich a failed
+        task will no longer be retried. The given value will be rounded up to
+        the nearest integer. If task_retry_limit is also specified then the task
+        will be retried until both limits are reached. (optional)
+      max_doublings: The maximum number of times that the interval between
+        failed task retries will be doubled before the increase becomes
+        constant. The constant will be:
+        2**(max_doublings - 1) * min_backoff_seconds. (optional)
+      task_retry_limit: The maximum number of times to retry a failed task
+        before giving up. If task_age_limit is specified then the task will be
+        retried until both limits are reached. (optional)
+
+    Raises:
+      InvalidTaskRetryOptionsError if any of the parameters are invalid.
+    """
+    args_diff = set(kwargs.iterkeys()) - self.__CONSTRUCTOR_KWARGS
+    if args_diff:
+      raise TypeError('Invalid arguments: %s' % ', '.join(args_diff))
+
+    self.__min_backoff_seconds = kwargs.get('min_backoff_seconds')
+    if (self.__min_backoff_seconds is not None and
+        self.__min_backoff_seconds < 0):
+      raise InvalidTaskRetryOptionsError(
+          'The minimum retry interval cannot be negative')
+
+    self.__max_backoff_seconds = kwargs.get('max_backoff_seconds')
+    if (self.__max_backoff_seconds is not None and
+        self.__max_backoff_seconds < 0):
+      raise InvalidTaskRetryOptionsError(
+          'The maximum retry interval cannot be negative')
+
+    if (self.__min_backoff_seconds is not None and
+        self.__max_backoff_seconds is not None and
+        self.__max_backoff_seconds < self.__min_backoff_seconds):
+      raise InvalidTaskRetryOptionsError(
+          'The maximum retry interval cannot be less than the '
+          'minimum retry interval')
+
+    self.__max_doublings = kwargs.get('max_doublings')
+    if self.__max_doublings is not None and self.__max_doublings < 0:
+      raise InvalidTaskRetryOptionsError(
+          'The maximum number of retry interval doublings cannot be negative')
+
+    self.__task_retry_limit = kwargs.get('task_retry_limit')
+    if self.__task_retry_limit is not None and self.__task_retry_limit < 0:
+      raise InvalidTaskRetryOptionsError(
+          'The maximum number of retries cannot be negative')
+
+    self.__task_age_limit = kwargs.get('task_age_limit')
+    if self.__task_age_limit is not None:
+      if self.__task_age_limit < 0:
+        raise InvalidTaskRetryOptionsError(
+            'The expiry countdown cannot be negative')
+      self.__task_age_limit = int(math.ceil(self.__task_age_limit))
+
+  @property
+  def min_backoff_seconds(self):
+    """The minimum number of seconds to wait before retrying a task."""
+    return self.__min_backoff_seconds
+
+  @property
+  def max_backoff_seconds(self):
+    """The maximum number of seconds to wait before retrying a task."""
+    return self.__max_backoff_seconds
+
+  @property
+  def task_age_limit(self):
+    """The number of seconds afterwhich a failed task will not be retried."""
+    return self.__task_age_limit
+
+  @property
+  def max_doublings(self):
+    """The number of times that the retry interval will be doubled."""
+    return self.__max_doublings
+
+  @property
+  def task_retry_limit(self):
+    """The number of times that a failed task will be retried."""
+    return self.__task_retry_limit
+
+
 class Task(object):
   """Represents a single Task on a queue."""
 
+
   __CONSTRUCTOR_KWARGS = frozenset([
-      'countdown', 'eta', 'headers', 'method', 'name', 'params', 'url'])
+      'countdown', 'eta', 'headers', 'method', 'name', 'params',
+      'retry_options', 'url'])
+
 
   __eta_posix = None
 
@@ -313,6 +455,8 @@ class Task(object):
       url: Relative URL where the webhook that should handle this task is
         located for this application. May have a query string unless this is
         a POST method.
+      retry_options: TaskRetryOptions used to control when the task will be
+        retried if it fails.
 
     Raises:
       InvalidTaskError if any of the parameters are invalid;
@@ -337,6 +481,7 @@ class Task(object):
     self.__method = kwargs.get('method', 'POST').upper()
     self.__payload = None
     params = kwargs.get('params', {})
+
 
     for header_name, environ_name in _PRESERVE_ENVIRONMENT_HEADERS:
       value = os.environ.get(environ_name)
@@ -379,6 +524,7 @@ class Task(object):
     self.__eta_posix = Task.__determine_eta_posix(
         kwargs.get('eta'), kwargs.get('countdown'))
     self.__eta = None
+    self.__retry_options = kwargs.get('retry_options')
     self.__enqueued = False
 
     if self.size > MAX_TASK_SIZE_BYTES:
@@ -443,8 +589,10 @@ class Task(object):
       if not isinstance(eta, datetime.datetime):
         raise InvalidTaskError('ETA must be a datetime.datetime instance')
       elif eta.tzinfo is None:
+
         return time.mktime(eta.timetuple()) + eta.microsecond*1e-6
       else:
+
         return calendar.timegm(eta.utctimetuple()) + eta.microsecond*1e-6
     elif countdown is not None:
       try:
@@ -502,6 +650,7 @@ class Task(object):
   def eta_posix(self):
     """Returns a POSIX timestamp giving when this Task will execute."""
     if self.__eta_posix is None and self.__eta is not None:
+
       self.__eta_posix = Task.__determine_eta_posix(self.__eta)
     return self.__eta_posix
 
@@ -551,6 +700,11 @@ class Task(object):
     return self.__relative_url
 
   @property
+  def retry_options(self):
+    """Returns the TaskRetryOptions for this task, which may be None."""
+    return self.__retry_options
+
+  @property
   def was_enqueued(self):
     """Returns True if this Task has been enqueued.
 
@@ -575,6 +729,8 @@ class Queue(object):
     Raises:
       InvalidQueueNameError if the queue name is invalid.
     """
+
+
     if not _QUEUE_NAME_RE.match(name):
       raise InvalidQueueNameError(
           'Queue name does not match pattern "%s"; found %s' %
@@ -582,7 +738,35 @@ class Queue(object):
     self.__name = name
     self.__url = '%s/%s' % (_DEFAULT_QUEUE_PATH, self.__name)
 
+
+
+
+
     self._app = None
+
+  def purge(self):
+    """Removes all the tasks in this Queue.
+
+    This function takes constant time to purge a Queue and some delay may apply
+    before the call is effective.
+
+    Raises:
+      UnknownQueueError if the Queue does not exist on server side.
+    """
+    request = taskqueue_service_pb.TaskQueuePurgeQueueRequest()
+    response = taskqueue_service_pb.TaskQueuePurgeQueueResponse()
+
+    request.set_queue_name(self.__name)
+    if self._app:
+      request.set_app_id(self._app)
+
+    try:
+      apiproxy_stub_map.MakeSyncCall('taskqueue',
+                                     'PurgeQueue',
+                                     request,
+                                     response)
+    except apiproxy_errors.ApplicationError, e:
+      raise self.__TranslateError(e.application_error, e.error_detail)
 
   def add(self, task, transactional=False):
     """Adds a Task or list of Tasks to this Queue.
@@ -627,6 +811,11 @@ class Queue(object):
   def __AddTasks(self, tasks, transactional):
     """Internal implementation of .add() where tasks must be a list."""
 
+    if len(tasks) > MAX_TASKS_PER_ADD:
+      raise TooManyTasksError(
+          'No more than %d tasks can be added in a single add call' %
+          MAX_TASKS_PER_ADD)
+
     request = taskqueue_service_pb.TaskQueueBulkAddRequest()
     response = taskqueue_service_pb.TaskQueueBulkAddResponse()
 
@@ -667,6 +856,34 @@ class Queue(object):
 
     return tasks
 
+  def __FillTaskQueueRetryParameters(self,
+                                     retry_options,
+                                     retry_retry_parameters):
+    """Populates a TaskQueueRetryParameters with data from a TaskRetryOptions.
+
+    Args:
+      retry_options: The TaskRetryOptions instance to use as a source for the
+        data to be added to retry_retry_parameters.
+      retry_retry_parameters: A taskqueue_service_pb.TaskQueueRetryParameters
+        to populate.
+    """
+    if retry_options.min_backoff_seconds is not None:
+      retry_retry_parameters.set_min_backoff_sec(
+          retry_options.min_backoff_seconds)
+
+    if retry_options.max_backoff_seconds is not None:
+      retry_retry_parameters.set_max_backoff_sec(
+          retry_options.max_backoff_seconds)
+
+    if retry_options.task_retry_limit is not None:
+      retry_retry_parameters.set_retry_limit(retry_options.task_retry_limit)
+
+    if retry_options.task_age_limit is not None:
+      retry_retry_parameters.set_age_limit_sec(retry_options.task_age_limit)
+
+    if retry_options.max_doublings is not None:
+      retry_retry_parameters.set_max_doublings(retry_options.max_doublings)
+
   def __FillAddRequest(self, task, task_request, transactional):
     """Populates a TaskQueueAddRequest with the data from a Task instance.
 
@@ -692,6 +909,12 @@ class Queue(object):
       adjusted_url = self.__url + task.url
 
 
+
+
+
+
+
+
     task_request.set_queue_name(self.__name)
     task_request.set_eta_usec(long(task.eta_posix * 1e6))
     task_request.set_method(_METHOD_MAP.get(task.method))
@@ -709,8 +932,14 @@ class Queue(object):
       header.set_key(key)
       header.set_value(value)
 
+    if task.retry_options:
+      self.__FillTaskQueueRetryParameters(
+          task.retry_options, task_request.mutable_retry_parameters())
+
     if self._app:
       task_request.set_app_id(self._app)
+
+
 
     if transactional:
       from google.appengine.api import datastore
@@ -761,6 +990,7 @@ class Queue(object):
         return Error('Application error %s: %s' % (error, detail))
 
 
+
 def add(*args, **kwargs):
   """Convenience method will create a Task and add it to a queue.
 
@@ -794,6 +1024,8 @@ def add(*args, **kwargs):
     eta: Absolute time when the Task should execute. May not be specified
       if 'countdown' is also supplied. This may be timezone-aware or
       timezone-naive.
+    retry_options: TaskRetryOptions used to control when the task will be
+      retried if it fails.
 
   Returns:
     The Task that was added to the queue.

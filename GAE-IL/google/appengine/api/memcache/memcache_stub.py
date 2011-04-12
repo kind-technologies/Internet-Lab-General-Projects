@@ -15,7 +15,14 @@
 # limitations under the License.
 #
 
+
+
+
 """Stub version of the memcache API, keeping all data in process memory."""
+
+
+
+
 
 
 
@@ -27,11 +34,15 @@ from google.appengine.api import memcache
 from google.appengine.api.memcache import memcache_service_pb
 from google.appengine.runtime import apiproxy_errors
 
+
 MemcacheSetResponse = memcache_service_pb.MemcacheSetResponse
 MemcacheSetRequest = memcache_service_pb.MemcacheSetRequest
 MemcacheIncrementRequest = memcache_service_pb.MemcacheIncrementRequest
 MemcacheIncrementResponse = memcache_service_pb.MemcacheIncrementResponse
 MemcacheDeleteResponse = memcache_service_pb.MemcacheDeleteResponse
+
+
+MAX_REQUEST_SIZE = 32 << 20
 
 
 class CacheEntry(object):
@@ -108,17 +119,21 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
       gettime: time.time()-like function used for testing.
       service_name: Service name expected for all calls.
     """
-    super(MemcacheServiceStub, self).__init__(service_name)
+    super(MemcacheServiceStub, self).__init__(service_name,
+                                              max_request_size=MAX_REQUEST_SIZE)
     self._gettime = lambda: int(gettime())
     self._ResetStats()
+
 
     self._the_cache = {}
 
   def _ResetStats(self):
     """Resets statistics information."""
+
     self._hits = 0
     self._misses = 0
     self._byte_hits = 0
+
     self._cache_creation_time = self._gettime()
 
   def _GetKey(self, namespace, key):
@@ -185,6 +200,7 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
           (set_policy == MemcacheSetRequest.ADD and old_entry is None) or
           (set_policy == MemcacheSetRequest.REPLACE and old_entry is not None)):
 
+
         if (old_entry is None or
             set_policy == MemcacheSetRequest.SET
             or not old_entry.CheckLocked()):
@@ -216,6 +232,7 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
       elif item.delete_time() == 0:
         del self._the_cache[namespace][key]
       else:
+
         entry.ExpireAndLock(item.delete_time())
 
       response.add_delete_status(delete_status)
@@ -248,6 +265,10 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
     try:
       old_value = long(entry.value)
       if old_value < 0:
+
+
+
+
         raise ValueError
     except ValueError:
       logging.error('Increment/decrement failed: Could not interpret '
@@ -257,6 +278,7 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
     delta = request.delta()
     if request.direction() == MemcacheIncrementRequest.DECREMENT:
       delta = -delta
+
 
     new_value = max(old_value + delta, 0) % (2**64)
 
@@ -323,5 +345,6 @@ class MemcacheServiceStub(apiproxy_stub.APIProxyStub):
         total_bytes += len(entry.value)
     stats.set_items(items)
     stats.set_bytes(total_bytes)
+
 
     stats.set_oldest_item_age(self._gettime() - self._cache_creation_time)

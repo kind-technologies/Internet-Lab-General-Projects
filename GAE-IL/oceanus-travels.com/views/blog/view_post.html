@@ -1,0 +1,22 @@
+{% include "../elements/header.html" %}
+<div id="page">
+	<div id="page-bgtop">
+		<div id="blog_content">
+			<!-- primary post -->
+			<div class="post">
+				<p class="meta"><span class="date">{{ post.date_last_modified|date:"l, F d, Y" }} </span> {{ post.date_last_modified|date:"g:i A" }} Posted by <a href="#">{{ post.author.nickname|escape }}</a></p>
+				<h2 class="title"><a href="#">{{ post.title }}</a></h2>
+				<div class="entry">
+					{{ post.body }}
+				</div>
+				<div><a href="/blog/" class="links">Go to Blog</a></div>
+			</div>
+			<!-- end #primary post -->
+		</div>
+		<!-- end #content -->
+		<div style="clear: both;">&nbsp;</div>
+	</div>
+	<!-- end #page -->
+</div>
+{% include "../elements/footer.html" %}
+

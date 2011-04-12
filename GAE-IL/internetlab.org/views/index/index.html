@@ -7,11 +7,11 @@
 			<div class="viewer">
 				<div class="reel">
 					<div class="slide">
-						<img src="/static/img/fams-stack-php.png" width="726" height="335" alt="" /> 
+						<img src="/static/img/fams-stack-php.jpg" width="726" height="335" alt="" /> 
 						<span style="background-color:#000000;color:#ffffff;opacity: 0.70;">Fixed Asset Management System</span> 
 					</div>
 					<div class="slide">
-						<img src="/static/img/oceanus-travels-banner.png" width="726" height="335" alt="" /> 
+						<img src="/static/img/oceanus-travels-banner.jpg" width="726" height="335" alt="" /> 
 						<span style="background-color:#14acaf;color:#ffffff;opacity: 1.00;">Oceanus Teavels now online with Internet Lab.</span> 
 					</div>
 				</div>
@@ -44,7 +44,7 @@
 				<div class="entry">
 					{{ primary_post.body|truncatewords:"200" }}
 				</div>
-				<div><a href="#" class="links">View Full Story</a></div>
+				<div><a href="/blog/view/{{ primary_post.url }}/" class="links">View Full Post</a></div>
 			</div>
 			<!-- end #primary post -->
 			<!--new posts-->
@@ -55,7 +55,7 @@
 				<div class="entry">
 					{{ post.body|truncatewords:"100" }}
 				</div>
-				<div><a href="#" class="links">View Full Story</a></div>
+				<div><a href="/blog/view/{{ post.url }}/" class="links">View Full Post</a></div>
 			</div>
 			{% endfor%}
 			<!--end #new posts-->
@@ -67,28 +67,26 @@
 					<h2>Follow Internet Lab</h2>
 					<p>
 						<a href="http://twitter.com/internetlaborg" target="_blank">
-						<img src="/static/img/twitter-icon.png" width="70px" height="" alt="Follow Internet Lab on Twitter" />
+						<img src="/static/img/twitter-icon.png"  alt="Follow Internet Lab on Twitter" />
 						</a>
 						<a href="http://www.facebook.com/pages/Internetlaborg/141414285912160" target="_blank">
-						<img src="/static/img/facebook-icon.png" width="70px" height="" alt="Follow Internet Lab on Facebook" />
+						<img src="/static/img/facebook-icon.png"  alt="Follow Internet Lab on Facebook" />
 						</a>
-						<!--
+						&nbsp;
 						<a href="http://www.flickr.com/photos/internetlaborg/" target="_blank">
-						<img src="/static/img/flickr-icon.png" width="60px" height="" alt="Follow Internet Lab on Flickr" />
-						</a>-->					
+						<img src="/static/img/flickr-icon.png" alt="Follow Internet Lab on Flickr" />
+						</a>				
 					</p>
 				</li>
 				<li>
 					<h2>Internet Lab Tweets</h2>
-					<div class="tweet"></div>	
+					<div class="tweet" id="tweet"></div>	
 				</li>
-				<li>
-					<h2>Internet Lab News</h2>
-					<ul>
-						<li><a href="#">New Website Launched</a></li>
-						<li><a href="#">FAMS Now on GIT</a></li>
-					</ul>
-				</li>
+				{#<li>#}
+					
+					{#<iframe src="http://www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fpages%2FInternetlaborg%2F141414285912160&amp;width=240&amp;colorscheme=dark&amp;show_faces=true&amp;stream=true&amp;header=true&amp;height=427" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:240px; height:427px;" allowTransparency="true"></iframe>#}
+					
+				{#</li>#}
 			</ul>
 		</div>
 		<!-- end #sidebar -->

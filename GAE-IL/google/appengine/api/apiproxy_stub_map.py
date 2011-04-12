@@ -15,6 +15,10 @@
 # limitations under the License.
 #
 
+
+
+
+
 """Container of APIProxy stubs for more convenient unittesting.
 
 Classes/variables/functions defined here:
@@ -23,6 +27,10 @@ Classes/variables/functions defined here:
   MakeSyncCall: APIProxy entry point.
   UserRPC: User-visible class wrapping asynchronous RPCs.
 """
+
+
+
+
 
 
 
@@ -100,7 +108,9 @@ class ListOfHooks(object):
   def __init__(self):
     """Constructor."""
 
+
     self.__content = []
+
 
     self.__unique_keys = set()
 
@@ -188,6 +198,8 @@ class ListOfHooks(object):
         if num_args == 6:
           function(service, call, request, response, rpc, error)
         elif error is not None:
+
+
           pass
         elif num_args == 5:
           function(service, call, request, response, rpc)
@@ -207,6 +219,8 @@ class APIProxyStubMap(object):
   service names, as well as define a default stub to be used if no specific
   matching stub is identified.
   """
+
+
 
 
   def __init__(self, default_stub=None):
@@ -239,6 +253,12 @@ class APIProxyStubMap(object):
     """
     assert not self.__stub_map.has_key(service), repr(service)
     self.__stub_map[service] = stub
+
+
+
+
+
+
 
     if service == 'datastore':
       self.RegisterStub('datastore_v3', stub)
@@ -275,6 +295,8 @@ class APIProxyStubMap(object):
     Raises:
       apiproxy_errors.Error or a subclass.
     """
+
+
     stub = self.GetStub(service)
     assert stub, 'No api proxy found for service "%s"' % service
     if hasattr(stub, 'CreateRPC'):
@@ -300,6 +322,10 @@ class APIProxyStubMap(object):
         self.__postcall_hooks.Call(service, call, request,
                                    returned_response or response)
         return returned_response
+
+  def CancelApiCalls(self):
+    if self.__default_stub:
+      self.__default_stub.CancelApiCalls()
 
 
 class UserRPC(object):
@@ -369,6 +395,20 @@ class UserRPC(object):
     self.__rpc.callback = self.__internal_callback
     self.callback = callback
 
+
+
+
+
+
+
+
+
+
+
+
+
+    self.__class__.__local.may_interrupt_wait = False
+
   def __internal_callback(self):
     """This is the callback set on the low-level RPC object.
 
@@ -377,7 +417,16 @@ class UserRPC(object):
     interrupts the current wait_any() call by raising an exception.
     """
     self.__must_call_user_callback = True
+    self.__rpc.callback = None
     if self.__class__.__local.may_interrupt_wait and not self.__rpc.exception:
+
+
+
+
+
+
+
+
       raise apiproxy_errors.InterruptedError(None, self.__rpc)
 
   @property
@@ -446,12 +495,17 @@ class UserRPC(object):
 
     Before the call is initiated, the precall hooks are called.
     """
+
     assert self.__rpc.state == apiproxy_rpc.RPC.IDLE, repr(self.state)
+
     self.__method = method
+
     self.__get_result_hook = get_result_hook
     self.__user_data = user_data
+
     self.__stubmap.GetPreCallHooks().Call(
         self.__service, method, request, response, self.__rpc)
+
     self.__rpc.MakeCall(self.__service, method, request, response)
 
   def wait(self):
@@ -472,9 +526,12 @@ class UserRPC(object):
     Note: don't confuse callbacks with get-result hooks or precall
     and postcall hooks.
     """
+
     assert self.__rpc.state != apiproxy_rpc.RPC.IDLE, repr(self.state)
+
     if self.__rpc.state == apiproxy_rpc.RPC.RUNNING:
       self.__rpc.Wait()
+
     assert self.__rpc.state == apiproxy_rpc.RPC.FINISHING, repr(self.state)
     self.__call_user_callback()
 
@@ -494,10 +551,13 @@ class UserRPC(object):
     The first time check_success() is called, the postcall hooks
     are called.
     """
+
+
     self.wait()
     try:
       self.__rpc.CheckSuccess()
     except Exception, err:
+
       if not self.__postcall_hooks_called:
         self.__postcall_hooks_called = True
         self.__stubmap.GetPostCallHooks().Call(self.__service, self.__method,
@@ -505,6 +565,7 @@ class UserRPC(object):
                                                self.__rpc, err)
       raise
     else:
+
       if not self.__postcall_hooks_called:
         self.__postcall_hooks_called = True
         self.__stubmap.GetPostCallHooks().Call(self.__service, self.__method,
@@ -520,6 +581,10 @@ class UserRPC(object):
     Otherwise, check_success() is called directly and None is
     returned.
     """
+
+
+
+
     if self.__get_result_hook is None:
       self.check_success()
       return None
@@ -588,9 +653,14 @@ class UserRPC(object):
       cls.__local.may_interrupt_wait = True
       try:
         running.__rpc.Wait()
-      except apiproxy_errors.InterruptedError:
-        running.__rpc._RPC__exception = None
-        running.__rpc._RPC__traceback = None
+      except apiproxy_errors.InterruptedError, err:
+
+
+
+
+
+        err.rpc._RPC__exception = None
+        err.rpc._RPC__traceback = None
     finally:
       cls.__local.may_interrupt_wait = False
     finished, runnning = cls.__check_one(rpcs)
@@ -616,13 +686,23 @@ class UserRPC(object):
         rpcs.remove(finished)
 
 
+
+
 def GetDefaultAPIProxy():
   try:
+
+
+
+
+
+
     runtime = __import__('google.appengine.runtime', globals(), locals(),
                          ['apiproxy'])
     return APIProxyStubMap(runtime.apiproxy)
   except (AttributeError, ImportError):
     return APIProxyStubMap()
+
+
 
 
 apiproxy = GetDefaultAPIProxy()

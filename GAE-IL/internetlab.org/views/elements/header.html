@@ -12,7 +12,8 @@ Released   : 20100423
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<title>Internet Lab</title>
+	<title>Internet Lab :: {{ page_title }}</title>
+	<link rel="icon" type="image/png" href="/static/img/internetlab-favicon.png">
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<script type="text/javascript" src="/static/js/jquery/jquery-1.4.2.min.js"></script>
@@ -28,14 +29,28 @@ Released   : 20100423
 				join_text: "auto",
 				avatar_size: 32,
 				count: 3,
-				auto_join_text_default: "we said,", 
-				auto_join_text_ed: "we",
-				auto_join_text_ing: "we were",
-				auto_join_text_reply: "we replied to",
-				auto_join_text_url: "we were checking out",
+				auto_join_text_default: "", // "we said,", 
+				auto_join_text_ed: "", // "we",
+				auto_join_text_ing: "", // "we were",
+				auto_join_text_reply: "", // "we replied to",
+				auto_join_text_url: "", // "we were checking out",
 				loading_text: "loading tweets..."
 			});
 		});
+	</script>
+	
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-12938080-1']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
 	</script>
 </head>
 <body>
@@ -50,7 +65,7 @@ Released   : 20100423
 	<div id="menu">
 		<ul>
 			<li><a href="/" class="first">Homepage</a></li>
-			<li class="current_page_item"><a href="/blog">Blog</a></li>
+			<li class="current_page_item"><a href="/blog/">Blog</a></li>
 			<li><a href="#">Portfolio</a></li>
 			<li><a href="#">About</a></li>
 			<li><a href="/contact">Contact</a></li>

@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+
+
 from google.net.proto import ProtocolBuffer
 import array
 import dummy_thread as thread
@@ -26,18 +28,17 @@ from google.appengine.api.api_base_pb import *
 import google.appengine.api.api_base_pb
 class ChannelServiceError(ProtocolBuffer.ProtocolMessage):
 
+
   OK           =    0
   INTERNAL_ERROR =    1
   INVALID_CHANNEL_KEY =    2
   BAD_MESSAGE  =    3
-  CHANNEL_TIMEOUT =    4
 
   _ErrorCode_NAMES = {
     0: "OK",
     1: "INTERNAL_ERROR",
     2: "INVALID_CHANNEL_KEY",
     3: "BAD_MESSAGE",
-    4: "CHANNEL_TIMEOUT",
   }
 
   def ErrorCode_Name(cls, x): return cls._ErrorCode_NAMES.get(x, "")
@@ -62,7 +63,11 @@ class ChannelServiceError(ProtocolBuffer.ProtocolMessage):
 
   def ByteSize(self):
     n = 0
-    return n + 0
+    return n
+
+  def ByteSizePartial(self):
+    n = 0
+    return n
 
   def Clear(self):
     pass
@@ -70,9 +75,14 @@ class ChannelServiceError(ProtocolBuffer.ProtocolMessage):
   def OutputUnchecked(self, out):
     pass
 
+  def OutputPartial(self, out):
+    pass
+
   def TryMerge(self, d):
     while d.avail() > 0:
       tt = d.getVarInt32()
+
+
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
       d.skipData(tt)
 
@@ -93,6 +103,7 @@ class ChannelServiceError(ProtocolBuffer.ProtocolMessage):
   _TYPES = _BuildTagLookupTable({
     0: ProtocolBuffer.Encoder.NUMERIC,
   }, 0, ProtocolBuffer.Encoder.MAX_TYPE)
+
 
   _STYLE = """"""
   _STYLE_CONTENT_TYPE = """"""
@@ -140,6 +151,13 @@ class CreateChannelRequest(ProtocolBuffer.ProtocolMessage):
     n += self.lengthString(len(self.application_key_))
     return n + 1
 
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_application_key_):
+      n += 1
+      n += self.lengthString(len(self.application_key_))
+    return n
+
   def Clear(self):
     self.clear_application_key()
 
@@ -147,12 +165,19 @@ class CreateChannelRequest(ProtocolBuffer.ProtocolMessage):
     out.putVarInt32(10)
     out.putPrefixedString(self.application_key_)
 
+  def OutputPartial(self, out):
+    if (self.has_application_key_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.application_key_)
+
   def TryMerge(self, d):
     while d.avail() > 0:
       tt = d.getVarInt32()
       if tt == 10:
         self.set_application_key(d.getPrefixedString())
         continue
+
+
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
       d.skipData(tt)
 
@@ -177,6 +202,7 @@ class CreateChannelRequest(ProtocolBuffer.ProtocolMessage):
     0: ProtocolBuffer.Encoder.NUMERIC,
     1: ProtocolBuffer.Encoder.STRING,
   }, 1, ProtocolBuffer.Encoder.MAX_TYPE)
+
 
   _STYLE = """"""
   _STYLE_CONTENT_TYPE = """"""
@@ -218,12 +244,22 @@ class CreateChannelResponse(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     n = 0
     if (self.has_client_id_): n += 1 + self.lengthString(len(self.client_id_))
-    return n + 0
+    return n
+
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_client_id_): n += 1 + self.lengthString(len(self.client_id_))
+    return n
 
   def Clear(self):
     self.clear_client_id()
 
   def OutputUnchecked(self, out):
+    if (self.has_client_id_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.client_id_)
+
+  def OutputPartial(self, out):
     if (self.has_client_id_):
       out.putVarInt32(18)
       out.putPrefixedString(self.client_id_)
@@ -234,6 +270,8 @@ class CreateChannelResponse(ProtocolBuffer.ProtocolMessage):
       if tt == 18:
         self.set_client_id(d.getPrefixedString())
         continue
+
+
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
       d.skipData(tt)
 
@@ -258,6 +296,7 @@ class CreateChannelResponse(ProtocolBuffer.ProtocolMessage):
     0: ProtocolBuffer.Encoder.NUMERIC,
     2: ProtocolBuffer.Encoder.STRING,
   }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
+
 
   _STYLE = """"""
   _STYLE_CONTENT_TYPE = """"""
@@ -328,6 +367,16 @@ class SendMessageRequest(ProtocolBuffer.ProtocolMessage):
     n += self.lengthString(len(self.message_))
     return n + 2
 
+  def ByteSizePartial(self):
+    n = 0
+    if (self.has_application_key_):
+      n += 1
+      n += self.lengthString(len(self.application_key_))
+    if (self.has_message_):
+      n += 1
+      n += self.lengthString(len(self.message_))
+    return n
+
   def Clear(self):
     self.clear_application_key()
     self.clear_message()
@@ -338,6 +387,14 @@ class SendMessageRequest(ProtocolBuffer.ProtocolMessage):
     out.putVarInt32(18)
     out.putPrefixedString(self.message_)
 
+  def OutputPartial(self, out):
+    if (self.has_application_key_):
+      out.putVarInt32(10)
+      out.putPrefixedString(self.application_key_)
+    if (self.has_message_):
+      out.putVarInt32(18)
+      out.putPrefixedString(self.message_)
+
   def TryMerge(self, d):
     while d.avail() > 0:
       tt = d.getVarInt32()
@@ -347,6 +404,8 @@ class SendMessageRequest(ProtocolBuffer.ProtocolMessage):
       if tt == 18:
         self.set_message(d.getPrefixedString())
         continue
+
+
       if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
       d.skipData(tt)
 
@@ -375,6 +434,7 @@ class SendMessageRequest(ProtocolBuffer.ProtocolMessage):
     1: ProtocolBuffer.Encoder.STRING,
     2: ProtocolBuffer.Encoder.STRING,
   }, 2, ProtocolBuffer.Encoder.MAX_TYPE)
+
 
   _STYLE = """"""
   _STYLE_CONTENT_TYPE = """"""

@@ -15,6 +15,9 @@
 # limitations under the License.
 #
 
+
+
+
 """Errors thrown by apiproxy.MakeSyncCall.
 """
 
@@ -61,6 +64,9 @@ class OverQuotaError(Error):
 
 class RequestTooLargeError(Error):
   """Raised by APIProxy calls if the request was too large."""
+
+class ResponseTooLargeError(Error):
+  """Raised by APIProxy calls if the response was too large."""
 
 class CapabilityDisabledError(Error):
   """Raised by APIProxy when API calls are temporarily disabled."""
